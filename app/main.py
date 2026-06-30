@@ -1,116 +1,145 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
-import random
 
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report
-import joblib
+st.set_page_config(
+    page_title="Dashboard",
+    page_icon="📖",
+    layout="wide"
+)
+
+st.title("📖 Monitoring Hafalan Al-Qur'an")
+st.write("Selamat datang, **Ustadz Ahmad**")
+
+st.divider()
 
 # =========================
-# 1. Generate Dataset
+# CARD STATISTIK
 # =========================
-def generate_data(n=1000):
-    data = []
 
-    for _ in range(n):
-        umur = random.randint(12, 18)
+col1, col2, col3, col4 = st.columns(4)
 
-        # distribusi realistis
-        setoran = np.clip(int(np.random.normal(5, 3)), 0, 14)
-        murojaah = np.clip(int(np.random.normal(4, 2)), 0, 14)
-        kehadiran = np.clip(int(np.random.normal(80, 15)), 40, 100)
-        nilai = np.clip(int(np.random.normal(75, 10)), 50, 100)
+col1.metric(
+    "Total Santri",
+    120
+)
 
-        konsistensi = round(setoran / 7, 2)
+col2.metric(
+    "Hafal 30 Juz",
+    35
+)
 
-        # =========================
-        # Labeling (logic realistis)
-        # =========================
-        if setoran >= 8 and kehadiran >= 90 and nilai >= 85:
-            progress = "cepat"
-        elif setoran >= 4 and kehadiran >= 70:
-            progress = "sedang"
-        else:
-            progress = "lambat"
+col3.metric(
+    "Sedang Aktif",
+    85
+)
 
-        data.append([
-            umur,
-            setoran,
-            murojaah,
-            kehadiran,
-            nilai,
-            konsistensi,
-            progress
-        ])
+col4.metric(
+    "Rata-rata Nilai",
+    "88"
+)
 
-    columns = [
-        'umur',
-        'setoran_per_minggu',
-        'murojaah_per_minggu',
-        'kehadiran',
-        'nilai_ujian',
-        'konsistensi',
-        'progress'
+st.divider()
+
+# =========================
+# GRAFIK
+# =========================
+
+left, right = st.columns(2)
+
+with left:
+
+    st.subheader("Perkembangan Hafalan")
+
+    data = pd.DataFrame({
+        "Minggu":[1,2,3,4,5],
+        "Juz":[2,4,6,8,10]
+    })
+
+    st.line_chart(
+        data.set_index("Minggu")
+    )
+
+with right:
+
+    st.subheader("Distribusi Hafalan")
+
+    juz = pd.DataFrame({
+        "Juz":[
+            "1-5",
+            "6-10",
+            "11-15",
+            "16-20",
+            "21-25",
+            "26-30"
+        ],
+        "Santri":[
+            20,
+            35,
+            28,
+            18,
+            12,
+            7
+        ]
+    })
+
+    st.bar_chart(
+        juz.set_index("Juz")
+    )
+
+st.divider()
+
+# =========================
+# TABEL
+# =========================
+
+st.subheader("Data Santri Terbaru")
+
+df = pd.DataFrame({
+
+    "Nama":[
+        "Ahmad",
+        "Ali",
+        "Fatimah",
+        "Aisyah",
+        "Budi"
+    ],
+
+    "Juz":[
+        12,
+        8,
+        15,
+        20,
+        5
+    ],
+
+    "Nilai Tajwid":[
+        90,
+        88,
+        95,
+        97,
+        82
+    ],
+
+    "Kelancaran":[
+        87,
+        84,
+        92,
+        95,
+        80
+    ],
+
+    "Status":[
+        "Aktif",
+        "Aktif",
+        "Aktif",
+        "Aktif",
+        "Belum Aktif"
     ]
 
-    return pd.DataFrame(data, columns=columns)
+})
 
-
-# generate dataset
-df = generate_data(1200)
-
-# simpan ke CSV
-df.to_csv("data_santri.csv", index=False)
-
-print("Dataset berhasil dibuat:", df.shape)
-print(df.head())
-
-
-# =========================
-# 2. Training Model
-# =========================
-X = df[['umur', 'setoran_per_minggu', 'murojaah_per_minggu', 'kehadiran', 'nilai_ujian', 'konsistensi']]
-y = df['progress']
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+st.dataframe(
+    df,
+    use_container_width=True
 )
-
-model = RandomForestClassifier(
-    n_estimators=200,
-    max_depth=10,
-    random_state=42
-)
-
-model.fit(X_train, y_train)
-
-
-# =========================
-# 3. Evaluasi
-# =========================
-y_pred = model.predict(X_test)
-
-print("\n=== HASIL EVALUASI ===")
-print(classification_report(y_test, y_pred))
-
-
-# =========================
-# 4. Simpan Model
-# =========================
-joblib.dump(model, "model_progress.pkl")
-print("\nModel disimpan!")
-
-
-# =========================
-# 5. Load & Prediksi Baru
-# =========================
-model_loaded = joblib.load("model_progress.pkl")
-
-# contoh data baru
-data_baru = [[15, 9, 7, 92, 88, 9/7]]
-
-hasil = model_loaded.predict(data_baru)
-
-print("\n=== PREDIKSI BARU ===")
-print("Progress:", hasil[0])
