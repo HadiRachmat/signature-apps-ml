@@ -142,4 +142,52 @@ Tambahkan lisensi jika proyek ini akan dipublikasikan (mis. MIT).
 
 ## Kontak
 
+############### CONTOH STRUKTUR FOLDER ############################
+monitoring-hafalan/
+│
+├── venv/                      # Virtual Environment Python
+│
+├── app.py                     # Entry point Streamlit
+│
+├── pages/                     # Halaman-halaman Streamlit
+│   ├── Dashboard.py
+│   ├── Data_Santri.py
+│   ├── Monitoring_Hafalan.py
+│   ├── Prediksi.py
+│   └── Tentang.py
+│
+├── api/                       # Koneksi ke Backend Node.js
+│   ├── santri_api.py
+│   ├── hafalan_api.py
+│   └── prediksi_api.py
+│
+├── machine_learning/
+│   ├── train_model.py         # Melatih Random Forest
+│   ├── predict.py             # Fungsi prediksi
+│   ├── preprocessing.py       # Pembersihan data
+│   └── model.pkl              # Model hasil training
+│
+├── data/
+│   ├── dataset.csv            # Dataset training
+│   └── testing.csv
+│
+├── components/                # Komponen UI yang bisa dipakai ulang
+│   ├── sidebar.py
+│   ├── navbar.py
+│   ├── cards.py
+│   └── charts.py
+│
+├── utils/
+│   ├── helper.py
+│   ├── config.py
+│   └── constants.py
+│
+├── assets/
+│   ├── logo.png
+│   └── background.png
+│
+├── requirements.txt
+│
+└── .gitignore
+
 Jika Anda ingin bantuan memecah kode menjadi modul, menambahkan argparsing, atau menulis tests/CI, beri tahu saya tugas mana yang mau dikerjakan selanjutnya.
